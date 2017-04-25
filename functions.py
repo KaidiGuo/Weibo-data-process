@@ -9,3 +9,12 @@ def get_files_from_folder(rootDir):
 
 
 get_files_from_folder("../WBTestdata/proxy")
+
+def creat_date_list(month,i,j):
+    dates = []
+    for n in range(i,j):
+        date = month + "-" +str(n).zfill(2)
+        dates.append(date)
+    return dates
+
+# print creat_date_list("04",01,15)
