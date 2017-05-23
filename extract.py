@@ -6,7 +6,11 @@ from bs4 import BeautifulSoup
 from functions import *
 import time
 import datetime
+import jieba
 
+###########
+# Input your process [month, start-date, end-date] here!
+###########
 dateList = creat_date_list("04",18,24)
 startTime = datetime.datetime.now()
 wbCount = 0
@@ -30,6 +34,8 @@ for date in dateList:
             print "----------------------------------------------------------------------------------------------"
             print "Find one: ", json.dumps(filename, encoding="UTF-8", ensure_ascii=False)
             print "----------------------------------------------------------------------------------------------"
+            if not os.path.exists("../WBOutputdata/"):
+                os.mkdir("../WBOutputdata/")
             outputPath = "../WBOutputdata/" + thisCountry + "/"
             if not os.path.exists(outputPath):
                 os.mkdir(outputPath)
