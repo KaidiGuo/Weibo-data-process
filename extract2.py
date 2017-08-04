@@ -6,13 +6,13 @@ from bs4 import BeautifulSoup
 from functions import *
 import time
 import datetime
-import jieba
+import jieba.analyse
 
 jieba.load_userdict("jieba/mydict.txt")
 ###########
 # Input your process [month, start-date, end-date] here!
 ###########
-dateList = creat_date_list("04",27,28)
+dateList = creat_date_list("04",28,29)
 startTime = datetime.datetime.now()
 wbCount = 0
 
@@ -61,6 +61,14 @@ for date in dateList:
                         itemRepostCount = str(thisdata['cards'][0]['card_group'][i]['mblog']['reposts_count'])
 
                         itemSource = puncfilter(thisdata['cards'][0]['card_group'][i]['mblog']['source'])
+                        itemSource2 =itemSource.encode("UTF-8")
+                        itemSourceUni = platformUni(itemSource2)
+                        itemSourceSimp = platformSimp(itemSourceUni)
+
+
+
+
+
 
                         itemUser = thisdata['cards'][0]['card_group'][i]['mblog']['user']['screen_name']
                         itemText = thisdata['cards'][0]['card_group'][i]['mblog']['text']
@@ -71,14 +79,21 @@ for date in dateList:
                             itemTextPretty += string
                         print "Text: ", itemTextPretty
 
+                        itemTextPretty = removepeople(itemTextPretty)
+                        itemTextPretty = removeurl(itemTextPretty)
+
                         itemTextP = puncfilter(itemTextPretty)
-                        itemTextCut = " ".join(jieba.cut(itemTextP))
+                        extract = jieba.analyse.extract_tags(itemTextP, topK=5, withWeight=True, allowPOS=())
+                        extractline = ""
+                        for word in extract:
+                            co = word[0]
+                            extractline = extractline + " " + co
 
                         itemUserID = str(thisdata['cards'][0]['card_group'][i]['mblog']['user']['id'])
                         itemUserGender = str(thisdata['cards'][0]['card_group'][i]['mblog']['user']['gender'])
                         itemUserFollower = str(thisdata['cards'][0]['card_group'][i]['mblog']['user']['followers_count'])
                         #print itemID, "<<>>", itemCreat,"<<>>", thisRequesttime,"<<>>", itemRepostCount, "<<>>", itemSource, "<<>>", itemUser, "<<>>", itemUserID, "<<>>", itemUserFollower, "<<>>", itemUserGender, "<<>>" ,itemText
-                        dataLine = itemCreatFormat + "\t" + itemKeyword.encode("UTF-8") + "\t" + str(itemID)  + "\t" + str(itemRepostCount) + "\t" + itemSource.encode("UTF-8") + "\t" + itemUser.encode("UTF-8") + "\t" + str(itemUserID) + "\t" + str(itemUserFollower) + "\t" + itemUserGender + "\t" + itemTextCut.encode("UTF-8") + '\n'
+                        dataLine = itemCreatFormat + "\t" + itemKeyword.encode("UTF-8") + "\t" + str(itemID)  + "\t" + str(itemRepostCount) + "\t" + itemSourceUni + "\t" + itemSourceSimp + "\t" +itemUser.encode("UTF-8") + "\t" + str(itemUserID) + "\t" + str(itemUserFollower) + "\t" + itemUserGender + "\t" +itemTextP.encode("UTF-8")+ "\t"+ extractline.encode("UTF-8") + '\n'
                         with open(outputFile,"a") as output:
                             output.write(dataLine)
                             wbCount += 1

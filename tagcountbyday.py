@@ -10,16 +10,7 @@ import functions
 wbdb = MySQLdb.connect("localhost","root","WIND327976003", "test", charset='utf8' )
 cursor = wbdb.cursor()
 
-# SQL 查询语句
-# SQL 查询语句
-# sql = "SELECT text FROM wbdata WHERE keyword = '德国'"
-# sql = "select * from tbl_user"
 
-# sql_total_country_rank = "select keyword,count(*) from wbdata group by keyword order by count(*) desc;"
-# sql_total_platform_rank = "select platform2,count(*) from wbdata group by platform2 order by count(*) desc limit 5;"
-# sql_total_gender_rank = "select gender,count(*) from wbdata group by gender;"
-# sql_gender_rank_german = "SELECT gender,count(*) FROM wbdata WHERE keyword = '德国' group by gender;"
-# sql_max_follower = "select * from wbdata where follower in (select max(follower) from wbdata);"
 sql_select_time = "select creat_at, count(*) from wbdata where creat_at > '2017-04-26 00:00:00' and creat_at <'2017-04-27 00:00:00';"
 
 
@@ -36,8 +27,9 @@ def structure_result(myresult):
     outputdata.append(textlist)
     return outputdata
 
-# sql_total_gender_rank = "select gender,count(*) from wbdata group by gender;"
-sql_tags_all = "select tags from wbdata where keyword = '德国' ;"
+# sql_tags_all = "select tags from wbdata where keyword = '德国' ;"
+# sql_tags_all = "select tags from wbdata where  creat_at > '2017-04-26 00:00:00' and creat_at <'2017-04-27 00:00:00' and platform2= '微博 weibocom' ;"
+sql_tags_all = "select tags from wbdata where platform2= 'iPhone' ;"
 cursor.execute(sql_tags_all)
 sql_tags_all_result = cursor.fetchall()
 
@@ -50,39 +42,6 @@ def turn_tags_tostring(sql_result):
     return outputstring
 
 
-def wordscounter(text, n):
-    wordDict = {}
-    wordlist =text.split(",")
-    for word in wordlist:
-        if word in wordDict:
-            wordDict[word] = wordDict[word] + 1
-        else:
-            wordDict[word] = 1
-
-    removelist = ["秒拍", "视频", "网页", "分享", "全文", "链接", "00", "01","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
-                  "12", "13", "14", "15","16","17","18","19","20", "21", "22", "23", "24", "25", "26", "27", "28","29", "30","31","100", "20",  "40", "50",
-                  "60", "70", "80","90"]
-
-    for word in removelist:
-        try:
-            del wordDict[word.decode("utf-8")]
-            # print "delet", word
-        except Exception:
-            pass
-    count = Counter(wordDict)
-    rank = count.most_common()[:n]
-    countmax = rank[1][1]
-    countmin = rank[-1][1]
-    # print countmax
-    # print countmin
-    diclist = []
-    for item in rank:
-        rankdic = {}
-        rankdic['text'] = item[0]
-        rankdic['size'] = functions.linear_scale(countmin,countmax,10,110,item[1])
-        diclist.append(rankdic)
-    diclist[0]['size'] = 120
-    print json.dumps(diclist, encoding="UTF-8", ensure_ascii=False)
 
 
 def smallcounter(text, n):
@@ -94,7 +53,7 @@ def smallcounter(text, n):
         else:
             wordDict[word] = 1
 
-    removelist = ["秒拍", "视频", "网页", "分享", "全文", "链接", "00", "01","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+    removelist = ["秒拍", "视频", "网页", "分享", "全文","微博", "链接", "我要", "微博去", "00", "01","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
                   "12", "13", "14", "15","16","17","18","19","20", "21", "22", "23", "24", "25", "26", "27", "28","29", "30","31","100", "20",  "40", "50",
                   "60", "70", "80","90"]
 
